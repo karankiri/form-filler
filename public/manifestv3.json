@@ -1,6 +1,6 @@
 {
-  "name": "Cat Facts",
-  "description": "Learn random facts about cats",
+  "name": "Form Filler",
+  "description": "Your assistant for filling boring Job applications",
   "version": "1.0.0",
   "manifest_version": 3,
   "action": {

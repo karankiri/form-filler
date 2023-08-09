@@ -20,7 +20,6 @@ index.id = pluginTagId;
 // Also control when the content script is injected from the manifest.json:
 // https://developer.chrome.com/docs/extensions/mv3/content_scripts/#run_time
 const body = document.querySelector("body");
-console.log("abcbc, from content script");
 if (body) {
   body.append(index);
 }
