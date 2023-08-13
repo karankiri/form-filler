@@ -65,7 +65,7 @@ const App = () => {
   }
 
   if (loading) return <div className="absolute top-20 right-20">Loading</div>;
-  if (userData) return <UserForm />;
+  if (!userData) return <UserForm />;
 
   return (
     <Container>

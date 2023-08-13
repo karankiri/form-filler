@@ -20,6 +20,6 @@
     "service_worker": "./background.global.js"
   },
   "icons": {
-    "128": "logo128.png"
+    "128": "FF-logo.png"
   }
 }
