@@ -3,6 +3,13 @@ import UserForm from "./Form";
 import Container from "./Container";
 import { FieldIds } from "./constants";
 import { Badge } from "@/components/ui/badge"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
 
 const formFiller = (allInputs, userData) => {
   [...allInputs].map((input) => {
@@ -85,19 +92,28 @@ const App = () => {
       >
         Reset Data
       </button>
-      <div>
-        {Object.keys(userData).map((key) => (
-          <div key={key}>
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(userData[key]);
-              }}
-            >
-              <Badge>{key}</Badge>
-            </button>
-          </div>
-        ))}
-      </div>
+      <TooltipProvider>
+        <div className="badgeContainer">
+          {Object.keys(userData).map((key) => (
+            <div key={key}>
+              <Tooltip>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(userData[key]);
+                  }}
+                >
+                  <TooltipTrigger>
+                    <Badge style={{ textTransform: 'capitalize' }}>{key.toLowerCase()}</Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Click to copy
+                  </TooltipContent>
+                </button>
+              </Tooltip>
+            </div>
+          ))}
+        </div>
+      </TooltipProvider>
     </Container>
   );
 };

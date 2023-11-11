@@ -84,3 +84,12 @@
             @apply text-slate-700 text-xl
         }
 }
+
+.badgeContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    row-gap: 2px;
+    align-items: center;
+    justify-content: center;
+}
