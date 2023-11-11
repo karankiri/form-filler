@@ -48,19 +48,13 @@ const App = () => {
     });
   }, []);
 
-  useEffect(() => {
-    chrome.runtime.onMessage.addListener(
-      function (request, sender, sendResponse) {
-        console.log("🚀 ~ file: App.tsx:54 ~ useEffect ~ request:", request)
-        if (request.message === "start") {
-          setStart(true);
-        }
+  chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+      if (request.message) {
+        setStart(msg => !msg);
       }
-    );
-    return (() => {
-      setStart(false);
-    })
-  }, [])
+    }
+  );
 
   async function handleOnClick() {
     const allInput = document.querySelectorAll("input");
@@ -91,6 +85,7 @@ const App = () => {
       setUserData(data);
     });
   }
+
 
   if (!start) return;
   if (loading) return <div className="absolute top-20 right-20">Loading</div>;

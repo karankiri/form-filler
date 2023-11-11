@@ -8,9 +8,10 @@
     "build:manifest:chrome": "mv dist/manifestv3.json dist/manifest.json",
     "build:background:chrome": "vite build --config vite.chrome.config.ts",
     "build:js": "vite build --config vite.content.config.ts",
+    "build:popup": "vite build --config vite.popup.config.ts",
     "build:web": "tsc && vite build",
     "build": "NODE_ENV=production run-s build:js build:web",
-    "build:chrome": "NODE_ENV=production run-s build:js build:background:chrome build:web build:manifest:chrome",
+    "build:chrome": "NODE_ENV=production run-s build:js build:background:chrome build:web build:popup build:manifest:chrome",
     "package": "zip -r extension.zip dist/*",
     "preview": "vite preview"
   },
