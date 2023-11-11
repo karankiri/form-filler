@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import {resolve} from "path";
+import path, { resolve } from "path";
 
 const fetchVersion = () => {
   return {
@@ -17,6 +17,11 @@ const fetchVersion = () => {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), fetchVersion()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "."),
+    }
+  },
   build: {
     emptyOutDir: false,
     outDir: resolve(__dirname, 'dist'),

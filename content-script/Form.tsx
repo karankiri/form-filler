@@ -1,6 +1,8 @@
 import React from "react";
 import Container from "./Container";
 import { FieldIds } from "./constants";
+import { Button } from "@/components/ui/button"
+
 
 const UserForm = ({
   saveForm,
@@ -33,6 +35,9 @@ const UserForm = ({
             />
           </div>
         ))}
+        <Button variant="outline">
+          Save Data
+        </Button>
         <button className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm disabled:opacity-75 w-48">
           Save Data
         </button>

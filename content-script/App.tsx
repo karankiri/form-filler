@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import UserForm from "./Form";
 import Container from "./Container";
 import { FieldIds } from "./constants";
-
+import { Badge } from "@/components/ui/badge"
 
 const formFiller = (allInputs, userData) => {
   [...allInputs].map((input) => {
@@ -88,13 +88,12 @@ const App = () => {
       <div>
         {Object.keys(userData).map((key) => (
           <div key={key}>
-            <label>{key}</label>
             <button
               onClick={() => {
                 navigator.clipboard.writeText(userData[key]);
               }}
             >
-              Copy
+              <Badge>{key}</Badge>
             </button>
           </div>
         ))}

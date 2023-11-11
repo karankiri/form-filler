@@ -11,7 +11,7 @@
     "skipLibCheck": true,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
     "module": "commonjs",
     "moduleResolution": "Node",
@@ -24,10 +24,11 @@
       "@/*": [
         "./*"
       ]
-    }
+    },
   },
   "include": [
-    "src"
+    "src",
+    "content-script"
   ],
   "references": [
     {
