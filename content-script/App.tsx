@@ -9,6 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { TypographyH2 } from "@/components/ui/typography";
 
 
 const formFiller = (allInputs, userData) => {
@@ -78,7 +79,7 @@ const App = () => {
 
   return (
     <Container>
-      <h1>Let's Apply for Some Jobs</h1>
+      <TypographyH2>Let's Apply for Some Jobs</TypographyH2>
       <button
         className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm disabled:opacity-75 w-48"
         disabled={loading}
