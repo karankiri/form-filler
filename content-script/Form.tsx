@@ -1,18 +1,10 @@
 import React from "react";
 import Container from "./Container";
+import { FieldIds } from "./constants";
 
-const FieldIds = {
-  firstName: ["first_name", "firstname"],
-  lastName: ["last_name", "lastname"],
-  email: ["email"],
-  phone: ["phone"],
-  linkedIn: ["linkedIn"],
-  github: ["github"],
-  website: ["portfolio", "personal", "website"],
-  twitter: ["twitter"],
-};
-
-const UserForm = () => {
+const UserForm = ({
+  saveForm,
+}) => {
   async function handleOnClick(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -21,9 +13,7 @@ const UserForm = () => {
     for (let entry of formData.entries()) {
       userData[entry[0]] = entry[1];
     }
-    chrome.storage.local.set({ formFillerData: userData }).then(() => {
-      console.log("Value is set");
-    });
+    saveForm(userData)
   }
 
   return (
