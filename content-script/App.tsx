@@ -36,6 +36,7 @@ const formFiller = (allInputs, userData) => {
 const App = () => {
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<any>();
+  const [start, setStart] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -46,6 +47,20 @@ const App = () => {
       setLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener(
+      function (request, sender, sendResponse) {
+        console.log("🚀 ~ file: App.tsx:54 ~ useEffect ~ request:", request)
+        if (request.message === "start") {
+          setStart(true);
+        }
+      }
+    );
+    return (() => {
+      setStart(false);
+    })
+  }, [])
 
   async function handleOnClick() {
     const allInput = document.querySelectorAll("input");
@@ -77,6 +92,7 @@ const App = () => {
     });
   }
 
+  if (!start) return;
   if (loading) return <div className="absolute top-20 right-20">Loading</div>;
   if (!userData) return <UserForm saveForm={saveForm} />;
 
