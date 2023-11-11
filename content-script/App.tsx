@@ -10,6 +10,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { TypographyH2 } from "@/components/ui/typography";
+import { Button } from "@/components/ui/button";
+import { ReloadIcon } from "@radix-ui/react-icons"
+
 
 
 const formFiller = (allInputs, userData) => {
@@ -80,19 +83,17 @@ const App = () => {
   return (
     <Container>
       <TypographyH2>Let's Apply for Some Jobs</TypographyH2>
-      <button
-        className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm disabled:opacity-75 w-48"
-        disabled={loading}
-        onClick={handleOnClick}
-      >
-        {loading ? `Filling form...` : `Fill Form For me`}
-      </button>
-      <button
-        onClick={resetLocalStorage}
-        className="px-4 py-2 font-semibold text-sm bg-cyan-500 text-white rounded-full shadow-sm disabled:opacity-75 w-48"
-      >
-        Reset Data
-      </button>
+      <div className="flex gap-4 pb-4">
+        <Button variant="outline" disabled={loading} onClick={handleOnClick}>
+          {loading ? <>
+            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+            Filling form for you
+          </> : `Fill Form For me`}
+        </Button>
+        <Button variant="outline" onClick={resetLocalStorage}>
+          Clear data
+        </Button>
+      </div>
       <TooltipProvider>
         <div className="badgeContainer">
           {Object.keys(userData).map((key) => (
