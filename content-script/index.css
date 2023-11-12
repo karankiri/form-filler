@@ -93,3 +93,8 @@
     grid-template-columns: 50% 50%;
     column-gap: 16px;
 }
+
+.filler-container {
+    width: 100%;
+    max-width: 450px;
+}
