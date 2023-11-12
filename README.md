@@ -2,6 +2,13 @@
 
 Your assistant for filling boring Job applications. Enter data once and use it across Job boards like Lever, Greenhouse, Workable, Bamboo HR etc...
 
+# Usage
+- Go to release section and download the form-filler.zip file from the latest release
+- To load the extensions in Google Chrome go to `chrome://extensions/` and click `Load unpacked`. 
+- Unzip the downloaded file and Locate the dist directory and select `manifest.json`.
+
+# Local development
+
 # Installation
 ```
 npm i
