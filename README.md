@@ -1,6 +1,6 @@
-# Cross Platform Browser Extension template repository
+# Form Filler assistant 
 
-React + TailwindCSS bundled with Vite.
+Your assistant for filling boring Job applications. Enter data once and use it across Job boards like Lever, Greenhouse, Workable, Bamboo HR etc...
 
 # Installation
 ```
@@ -9,7 +9,7 @@ npm i
 
 # Building the Extension:
 
-## Firefox
+<!-- ## Firefox
 `npm run build` builds the extension by default for Firefox.
 
 The generated files are in `dist/`.
@@ -18,7 +18,7 @@ To load the extension in Firefox go to `about:debugging#/runtime/this-firefox` o
 
 Firefox > Preferences > Extensions & Themes > Debug Add-ons > Load Temporary Add-on...
 
-Here locate the `dist/` directory and open `manifest.json`
+Here locate the `dist/` directory and open `manifest.json` -->
 
 ## Chrome
 `npm run build:chrome` builds the extensions for Google Chrome.

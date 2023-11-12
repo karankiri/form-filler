@@ -28,7 +28,7 @@ export default defineConfig({
     lib: {
       formats: ['iife'],
       entry: resolve(__dirname, './background.ts'),
-      name: 'Cat Facts'
+      name: 'Form Filler'
     },
     rollupOptions: {
       output: {
