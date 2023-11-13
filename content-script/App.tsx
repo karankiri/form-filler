@@ -9,7 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { TypographyH2 } from "@/components/ui/typography";
+import { TypographyH2, TypographyH3, TypographyP } from "@/components/ui/typography";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons"
 
@@ -37,6 +37,7 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<any>();
   const [start, setStart] = useState(true);
+  const [filled, setFilled] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -70,6 +71,7 @@ const App = () => {
         //    from the receiving end (content script).
         () => {
           setLoading(false);
+          setFilled(true);
         }
       );
     });
@@ -101,8 +103,16 @@ const App = () => {
 
   if (!start) return;
   if (loading) return <div className="absolute top-20 right-20">Loading</div>;
-  if (!userData) return <UserForm saveForm={saveForm} />;
-
+  if (filled) return (<Container>
+    <TypographyH3> Hurray, Your Form Filled </TypographyH3>
+    <TypographyP>
+      Found any issue? Please report it
+      <a href="https://github.com/karankiri/form-filler/issues" target="_blank">
+        <Button variant="link" style={{ paddingLeft: '4px' }}>here</Button>
+      </a>
+    </TypographyP>
+  </Container>)
+  if (!userData) return <Container><UserForm saveForm={saveForm} /></Container>;
   return (
     <Container>
       <TypographyH2>Let's Apply for Some Jobs</TypographyH2>
