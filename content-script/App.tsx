@@ -112,7 +112,7 @@ const App = () => {
       </a>
     </TypographyP>
   </Container>)
-  if (!userData) return <Container><UserForm saveForm={saveForm} /></Container>;
+  if (!userData) return <UserForm saveForm={saveForm} />;
   return (
     <Container>
       <TypographyH2>Let's Apply for Some Jobs</TypographyH2>
