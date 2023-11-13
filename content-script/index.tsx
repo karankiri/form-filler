@@ -12,7 +12,6 @@ if (existingInstance) {
 
 const index = document.createElement("div");
 index.id = pluginTagId;
-index.className = 'dark';
 
 // Make sure the element that you want to mount the app to has loaded. You can
 // also use `append` or insert the app using another method:

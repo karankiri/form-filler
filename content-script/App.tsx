@@ -36,7 +36,7 @@ const formFiller = (allInputs, userData) => {
 const App = () => {
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<any>();
-  const [start, setStart] = useState(false);
+  const [start, setStart] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -57,14 +57,26 @@ const App = () => {
   );
 
   async function handleOnClick() {
-    const allInput = document.querySelectorAll("input");
     setLoading(true);
+    chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    }, tabs => {
+      // ...and send a request for the DOM info...
+      chrome.tabs.sendMessage(
+        tabs[0].id,
+        { from: 'popup', subject: 'DOMInfo' },
+        // ...also specifying a callback to be called 
+        //    from the receiving end (content script).
+        () => {
+          setLoading(false);
+        }
+      );
+    });
     chrome.storage.local.get(["formFillerData"]).then((result) => {
       if (result.formFillerData) {
         setUserData(result.formFillerData);
-        formFiller(allInput, result.formFillerData);
       }
-      setLoading(false);
     });
   }
 
@@ -110,7 +122,7 @@ const App = () => {
           {Object.keys(userData).map((key) => (
             <div key={key}>
               <Tooltip>
-                <button
+                <div
                   onClick={() => {
                     navigator.clipboard.writeText(userData[key]);
                   }}
@@ -121,7 +133,7 @@ const App = () => {
                   <TooltipContent>
                     Click to copy
                   </TooltipContent>
-                </button>
+                </div>
               </Tooltip>
             </div>
           ))}

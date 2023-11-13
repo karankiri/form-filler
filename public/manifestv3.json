@@ -5,13 +5,12 @@
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
-    "default_title": "Open the popup"
+    "default_title": "Form Filler"
   },
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "<all_urls>"],
-      "js": ["index.global.js"],
-      "css": ["style.css"]
+      "js": ["popup.global.js"]
     }
   ],
   "permissions": ["scripting", "activeTab", "storage"],

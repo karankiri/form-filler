@@ -98,3 +98,7 @@
     width: 100%;
     max-width: 450px;
 }
+
+#extension-root {
+    width: 500px;
+}
