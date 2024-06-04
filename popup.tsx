@@ -1,7 +1,9 @@
 import { useState } from "react"
+import { Input } from "@/components/ui/input"
+import "./global.css"
 
 function IndexPopup() {
-  const [data, setData] = useState("")
+  const [data, setData] = useState("Hello")
 
   return (
     <div
@@ -15,7 +17,7 @@ function IndexPopup() {
         </a>{" "}
         Extension!
       </h2>
-      <input onChange={(e) => setData(e.target.value)} value={data} />
+      <Input onChange={(e) => setData(e.target.value)} value={data} />
       <a href="https://docs.plasmo.com" target="_blank">
         View Docs
       </a>
