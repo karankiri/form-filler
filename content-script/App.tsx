@@ -63,6 +63,7 @@ const App = () => {
       active: true,
       currentWindow: true
     }, tabs => {
+      console.log("🚀 ~ handleOnClick ~ tabs:", tabs)
       // ...and send a request for the DOM info...
       chrome.tabs.sendMessage(
         tabs[0].id,

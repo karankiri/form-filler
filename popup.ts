@@ -5,6 +5,7 @@ chrome.runtime.sendMessage({
 });
 
 chrome.runtime.onMessage.addListener((msg, sender, response) => {
+  console.log("🚀 ~ chrome.runtime.onMessage.addListener ~ msg:", msg)
   // First, validate the message's structure.
   if ((msg.from === 'popup') && (msg.subject === 'DOMInfo')) {
     // Collect the necessary data. 
@@ -13,7 +14,7 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
 
     // Directly respond to the sender (popup),
     // through the specified callback.
-    const allInputs: any[] = []
+    let allInputs: any[] = []
     // document.querySelectorAll('iframe').forEach(item => {
     //   console.log("🚀 ~ file: popup.ts:18 ~ document.querySelectorAll ~ item:", item)
     //   const items = item.contentWindow?.document.body.querySelectorAll('input')
@@ -21,8 +22,10 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
     //     allInputs.push(items)
     //   }
     // })
-    allInputs.push(document.querySelectorAll('input'))
+    allInputs = Array.from(document.querySelectorAll('input'))
     chrome.storage.local.get(["formFillerData"]).then((result) => {
+      console.log("🚀 ~ chrome.storage.local.get ~ result:", result)
+      console.log("🚀 ~ chrome.storage.local.get ~ allInputs:", allInputs)
       if (result.formFillerData) {
         formFiller(allInputs, result.formFillerData);
       }
