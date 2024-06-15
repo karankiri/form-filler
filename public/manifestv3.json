@@ -9,12 +9,23 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*", "<all_urls>"],
-      "js": ["popup.global.js"]
+      "matches": [
+        "http://*/*",
+        "https://*/*",
+        "<all_urls>"
+      ],
+      "js": [
+        "popup.global.js"
+      ]
     }
   ],
-  "permissions": ["scripting", "activeTab", "storage"],
-  "host_permissions": ["https://*/*"],
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*/*"
+  ],
   "background": {
     "service_worker": "./background.global.js"
   },
