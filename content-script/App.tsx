@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import UserForm from "./Form";
 import Container from "./Container";
-import { FieldIds } from "./constants";
+import type { FillResult } from "./constants";
 import { Badge } from "@/components/ui/badge"
 import {
   Tooltip,
@@ -15,29 +15,12 @@ import { ReloadIcon } from "@radix-ui/react-icons"
 
 
 
-const formFiller = (allInputs, userData) => {
-  [...allInputs].map((input) => {
-    for (let key in FieldIds) {
-      FieldIds[key].map((field) => {
-        if (input.name.toLowerCase().includes(field.toLowerCase())) {
-          input.value = userData[key];
-        }
-      });
-    }
-    if (
-      input.name.toLowerCase().includes("fullname".toLowerCase()) ||
-      input.name.toLowerCase() === "name"
-    ) {
-      input.value = `${userData.firstName} ${userData.lastName}`;
-    }
-  });
-};
-
 const App = () => {
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<any>();
   const [start, setStart] = useState(true);
-  const [filled, setFilled] = useState(false);
+  const [filled, setFilled] = useState<FillResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -49,37 +32,28 @@ const App = () => {
     });
   }, []);
 
-  chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-      if (request.message) {
-        setStart(msg => !msg);
-      }
-    }
-  );
-
-  async function handleOnClick() {
+  function handleOnClick() {
     setLoading(true);
-    chrome.tabs.query({
-      active: true,
-      currentWindow: true
-    }, tabs => {
-      console.log("🚀 ~ handleOnClick ~ tabs:", tabs)
-      // ...and send a request for the DOM info...
-      chrome.tabs.sendMessage(
-        tabs[0].id,
-        { from: 'popup', subject: 'DOMInfo' },
-        // ...also specifying a callback to be called 
-        //    from the receiving end (content script).
-        () => {
-          setLoading(false);
-          setFilled(true);
-        }
-      );
-    });
-    chrome.storage.local.get(["formFillerData"]).then((result) => {
-      if (result.formFillerData) {
-        setUserData(result.formFillerData);
+    setError(null);
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tabId = tabs[0]?.id;
+      if (tabId == null) {
+        setError("No active tab found");
+        setLoading(false);
+        return;
       }
+      chrome.tabs.sendMessage(tabId, { from: "popup", subject: "fillForm" }, (response) => {
+        setLoading(false);
+        if (chrome.runtime.lastError || !response) {
+          setError("Could not reach this page. Reload the tab and try again.");
+          return;
+        }
+        if (!response.ok) {
+          setError(response.error || "Something went wrong");
+          return;
+        }
+        setFilled({ filled: response.filled, candidates: response.candidates });
+      });
     });
   }
 
@@ -105,18 +79,29 @@ const App = () => {
   if (!start) return;
   if (loading) return <div className="absolute top-20 right-20">Loading</div>;
   if (filled) return (<Container>
-    <TypographyH3> Hurray, Your Form Filled </TypographyH3>
+    <TypographyH3>
+      {filled.filled > 0
+        ? `Filled ${filled.filled} field${filled.filled === 1 ? "" : "s"} for you`
+        : "No matching fields found on this page"}
+    </TypographyH3>
+    <TypographyP>
+      {filled.candidates === 0
+        ? "This page has no visible form fields. Open the application form first."
+        : "Please double-check the form before submitting."}
+    </TypographyP>
     <TypographyP>
       Found any issue? Please report it
       <a href="https://github.com/karankiri/form-filler/issues" target="_blank">
         <Button variant="link" style={{ paddingLeft: '4px' }}>here</Button>
       </a>
     </TypographyP>
+    <Button variant="outline" onClick={() => setFilled(null)}>Back</Button>
   </Container>)
   if (!userData) return <UserForm saveForm={saveForm} />;
   return (
     <Container>
       <TypographyH2>Let's Apply for Some Jobs</TypographyH2>
+      {error && <p className="text-sm text-destructive pb-2">{error}</p>}
       <div className="flex gap-4 pb-4">
         <Button variant="outline" disabled={loading} onClick={handleOnClick}>
           {loading ? <>
