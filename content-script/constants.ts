@@ -32,12 +32,12 @@ const FULL_NAME_ALIASES = ["full name", "full_name", "fullname", "your name", "l
 // Aliases that commonly appear in field labels but must not match a key.
 const NEGATIVE: Partial<Record<ProfileKey, string[]>> = {
   phone: ["phone type", "country code", "extension"],
-  website: ["linkedin", "github", "twitter", "x.com", "company website", "employer website"],
+  website: ["linkedin", "github", "twitter", "x.com", "company website", "employer website", "other website", "other url"],
   company: ["company website", "company url", "company size"],
-  email: ["confirm email", "verify email", "re-enter email", "email again"],
 };
 
 const INPUT_TYPES = new Set(["text", "email", "tel", "url", "search", ""]);
+const MAX_LABEL_LENGTH = 60;
 
 export type FillableElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
@@ -64,9 +64,12 @@ const isVisible = (el: HTMLElement) => {
 };
 
 const isFillable = (el: Element): el is FillableElement => {
-  if (el instanceof HTMLTextAreaElement) return !el.disabled && !el.readOnly;
+  // Textareas are free-text questions; no profile field belongs in one.
+  if (el instanceof HTMLTextAreaElement) return false;
   if (el instanceof HTMLSelectElement) return !el.disabled;
   if (el instanceof HTMLInputElement) {
+    // role="combobox" inputs are search boxes for custom selects (react-select); typing into them is wrong.
+    if (el.getAttribute("role") === "combobox") return false;
     return INPUT_TYPES.has(el.type) && !el.disabled && !el.readOnly;
   }
   return false;
@@ -74,20 +77,17 @@ const isFillable = (el: Element): el is FillableElement => {
 
 const labelTextFor = (el: FillableElement): string[] => {
   const parts: string[] = [];
+  const scope = el.getRootNode() as Document | ShadowRoot;
+  const byId = (id: string) => (typeof scope.getElementById === "function" ? scope.getElementById(id) : null);
   el.labels?.forEach((l) => parts.push(l.textContent || ""));
-  const labelledBy = el.getAttribute("aria-labelledby");
-  if (labelledBy) {
-    labelledBy.split(/\s+/).forEach((id) => {
-      const node = document.getElementById(id);
-      if (node) parts.push(node.textContent || "");
-    });
-  }
-  const describedBy = el.getAttribute("aria-describedby");
-  if (describedBy) {
-    describedBy.split(/\s+/).forEach((id) => {
-      const node = document.getElementById(id);
-      if (node) parts.push(node.textContent || "");
-    });
+  for (const attr of ["aria-labelledby", "aria-describedby"]) {
+    const ids = el.getAttribute(attr);
+    if (ids) {
+      ids.split(/\s+/).forEach((id) => {
+        const node = byId(id);
+        if (node) parts.push(node.textContent || "");
+      });
+    }
   }
   // Wrapping label or a nearby label-ish element (common in custom form libs).
   const wrapper = el.closest("label");
@@ -116,7 +116,8 @@ export const describeField = (el: FillableElement): FieldDescriptor => {
     el.getAttribute("data-automation-id"), // Workday
     el.getAttribute("data-qa"),
     el.getAttribute("title"),
-    ...labelTextFor(el),
+    // Labels longer than this are questions ("Let the company know..."), not field names.
+    ...labelTextFor(el).filter((t) => t.trim().length <= MAX_LABEL_LENGTH),
   ];
   return {
     element: el,
@@ -129,6 +130,10 @@ export const collectFields = (root: ParentNode = document): FieldDescriptor[] =>
   const out: FieldDescriptor[] = [];
   root.querySelectorAll("input, textarea, select").forEach((el) => {
     if (isFillable(el) && isVisible(el)) out.push(describeField(el));
+  });
+  // Open shadow roots (SmartRecruiters and other web-component form libraries).
+  root.querySelectorAll("*").forEach((el) => {
+    if (el.shadowRoot) out.push(...collectFields(el.shadowRoot));
   });
   // Same-origin iframes (e.g. embedded Greenhouse boards).
   root.querySelectorAll("iframe").forEach((frame) => {
@@ -165,9 +170,10 @@ export const classifyField = (field: FieldDescriptor): ProfileKey | "fullName" |
     if (FieldIds[key].some((a) => containsAlias(text, a))) return key;
   }
 
-  // Bare "name" field with nothing more specific.
-  const firstBit = text.split(" | ")[0];
-  if (firstBit === "name") return "fullName";
+  // Bare "name" field with nothing more specific (e.g. Ashby's `_systemfield_name` labelled "Name").
+  const bits = text.split(" | ");
+  const excluded = /first|last|user|file|display|preferred|company|org|school|university|middle|nick/;
+  if (bits.some((b) => (b === "name" || / name$/.test(b)) && !excluded.test(b))) return "fullName";
   return null;
 };
 
@@ -230,7 +236,10 @@ export const formFiller = (
       if (setSelectValue(el, value)) filled++;
       continue;
     }
-    if (!overwrite && el.value.trim()) continue;
+    // Phone widgets (intl-tel-input) pre-fill a bare dial code like "+45"; treat that as empty.
+    const existing = el.value.trim();
+    const isBareDialCode = key === "phone" && /^\+?\d{1,4}$/.test(existing);
+    if (!overwrite && existing && !isBareDialCode) continue;
     setNativeValue(el, value);
     filled++;
   }

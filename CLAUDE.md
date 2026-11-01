@@ -38,9 +38,11 @@ So `content-script/` is actually the popup, and `popup.ts` is actually the conte
 Runtime flow when the user clicks "Fill Form For me":
 
 1. Popup (`content-script/App.tsx`) does `chrome.tabs.sendMessage(activeTab, { from: 'popup', subject: 'fillForm' })` and expects `{ ok, filled, candidates }` back.
-2. Content script (`popup.ts`) receives it, calls `collectFields()` (visible `input`/`textarea`/`select`, including same-origin iframes), reads `formFillerData` from `chrome.storage.local`, and calls `formFiller()` from `content-script/constants.ts`.
-3. `classifyField` maps each field to a profile key using, in order: the `autocomplete` attribute, then whole-word alias matching against a descriptor built from name, id, placeholder, aria-label, `data-automation-id` (Workday), and associated label text. `NEGATIVE` aliases stop e.g. "confirm email" or "company website" from matching.
-4. Values are written through the native prototype setter followed by `input`/`change`/`blur` events so React-controlled forms (Greenhouse, Lever, Ashby, Workday) pick them up. Fields the user already typed into are skipped unless `overwrite` is passed.
+2. Content script (`popup.ts`) receives it, calls `collectFields()` (visible `input`/`select`, descending into open shadow roots and same-origin iframes; textareas and `role="combobox"` inputs are skipped because they are free-text questions or custom-select search boxes), reads `formFillerData` from `chrome.storage.local`, and calls `formFiller()` from `content-script/constants.ts`.
+3. `classifyField` maps each field to a profile key using, in order: the `autocomplete` attribute, then whole-word alias matching against a descriptor built from name, id, placeholder, aria-label, `data-automation-id` (Workday), and associated label text (labels over 60 chars are questions and are ignored). `NEGATIVE` aliases stop e.g. "company website" or "other website" from matching. "Confirm email" fields intentionally get the email.
+4. Values are written through the native prototype setter followed by `input`/`change`/`blur` events so React-controlled forms (Greenhouse, Lever, Ashby, Workday) pick them up. Fields the user already typed into are skipped unless `overwrite` is passed; a phone field holding only a dial code (intl-tel-input's "+45") counts as empty.
+
+Verified by hand on live Greenhouse, Ashby, Lever, Recruitee and SmartRecruiters application pages. Workday and Workable are untested.
 
 `FieldIds` in `content-script/constants.ts` is the single source of truth: its keys define both the fields shown in the onboarding form (`Form.tsx` iterates them) and the shape of the stored `formFillerData` object, and its values are the aliases used for matching. Adding a new profile field means adding one entry there (plus an `AUTOCOMPLETE_MAP` entry if a standard autocomplete token exists).
 
